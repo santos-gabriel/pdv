@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Buttons, Vcl.Grids,
-  Vcl.DBGrids, Vcl.StdCtrls, Vcl.Mask;
+  Vcl.DBGrids, Vcl.StdCtrls, Vcl.Mask, Cargos;
 
 type
   TFrmFuncionarios = class(TForm)
@@ -155,6 +155,15 @@ begin
   dm.query_func.ParamByName('id').Value := id;
   dm.query_func.ExecSQL;
 
+  dm.query_usuarios.Close;
+  dm.query_usuarios.SQL.Clear;
+  dm.query_usuarios.SQL.Add('UPDATE usuarios SET cargo = :cargo WHERE idFuncionario = :id;');
+  dm.query_usuarios.ParamByName('cargo').Value := cbxCargo.Text;
+  dm.query_usuarios.ParamByName('id').Value := id;
+  dm.query_usuarios.ExecSQL;
+
+
+
   listar;
   MessageDlg('Editado com sucesso!', mtConfirmation, mbOKCancel, 0);
   limparCampos;
@@ -171,7 +180,17 @@ begin
 
   limparCampos;
   desabilitarCampos;
-  listar
+
+
+  //DELETAR TAMBEM O USUARIO QUE ESTA RELACIONADO AO FUNCIONARIO
+  dm.query_usuarios.Close;
+  dm.query_usuarios.SQL.Clear;
+  dm.query_usuarios.SQL.Add('DELETE FROM usuarios WHERE idFuncionario = :id');
+  dm.query_usuarios.ParamByName('id').Value := id;
+  dm.query_usuarios.Execute;
+
+  listar;
+
 end;
 
 procedure TFrmFuncionarios.btnNovoClick(Sender: TObject);

@@ -1,7 +1,7 @@
 object dm: Tdm
   OldCreateOrder = True
   OnCreate = DataModuleCreate
-  Height = 475
+  Height = 353
   Width = 599
   object fd: TFDConnection
     Params.Strings = (
@@ -24,15 +24,15 @@ object dm: Tdm
     Connection = fd
     UpdateOptions.UpdateTableName = 'pdv.cargos'
     TableName = 'pdv.cargos'
-    Left = 40
-    Top = 96
+    Left = 80
+    Top = 104
   end
   object query_cargos: TFDQuery
     Connection = fd
     SQL.Strings = (
       'SELECT * FROM cargos order by cargo asc;')
-    Left = 40
-    Top = 168
+    Left = 80
+    Top = 176
     object query_cargosid: TFDAutoIncField
       DisplayLabel = 'ID'
       DisplayWidth = 5
@@ -52,23 +52,23 @@ object dm: Tdm
   end
   object ds_cargos: TDataSource
     DataSet = query_cargos
-    Left = 40
-    Top = 240
+    Left = 80
+    Top = 248
   end
   object tb_func: TFDTable
     IndexFieldNames = 'id'
     Connection = fd
     UpdateOptions.UpdateTableName = 'funcionarios'
     TableName = 'funcionarios'
-    Left = 120
-    Top = 96
+    Left = 208
+    Top = 104
   end
   object query_func: TFDQuery
     Connection = fd
     SQL.Strings = (
       'SELECT * FROM funcionarios;')
-    Left = 120
-    Top = 168
+    Left = 208
+    Top = 176
     object query_funcid: TFDAutoIncField
       DisplayLabel = 'ID'
       DisplayWidth = 7
@@ -123,81 +123,57 @@ object dm: Tdm
   end
   object ds_func: TDataSource
     DataSet = query_func
-    Left = 120
-    Top = 240
+    Left = 208
+    Top = 248
   end
   object tb_usuarios: TFDTable
     IndexFieldNames = 'id'
     Connection = fd
     UpdateOptions.UpdateTableName = 'pdv.usuarios'
     TableName = 'pdv.usuarios'
-    Left = 192
-    Top = 96
-    object tb_usuariosid: TFDAutoIncField
-      FieldName = 'id'
-      Origin = 'id'
-      ProviderFlags = [pfInWhere, pfInKey]
-    end
-    object tb_usuariosnome: TStringField
-      FieldName = 'nome'
-      Origin = 'nome'
-      Required = True
-      Size = 30
-    end
-    object tb_usuariosusuario: TStringField
-      FieldName = 'usuario'
-      Origin = 'usuario'
-      Required = True
-      Size = 25
-    end
-    object tb_usuariossenha: TStringField
-      FieldName = 'senha'
-      Origin = 'senha'
-      Required = True
-      Size = 25
-    end
-    object tb_usuarioscargo: TStringField
-      FieldName = 'cargo'
-      Origin = 'cargo'
-      Required = True
-      Size = 30
-    end
-    object tb_usuariosidFuncionario: TIntegerField
-      FieldName = 'idFuncionario'
-      Origin = 'idFuncionario'
-      Required = True
-    end
+    Left = 320
+    Top = 104
   end
   object query_usuarios: TFDQuery
     Connection = fd
     SQL.Strings = (
       'SELECT * FROM usuarios ORDER BY nome asc')
-    Left = 200
-    Top = 168
+    Left = 320
+    Top = 176
     object query_usuariosid: TFDAutoIncField
+      DisplayLabel = 'ID'
+      DisplayWidth = 7
       FieldName = 'id'
       Origin = 'id'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
     end
     object query_usuariosnome: TStringField
+      DisplayLabel = 'Nome'
       FieldName = 'nome'
       Origin = 'nome'
       Required = True
       Size = 30
     end
     object query_usuariosusuario: TStringField
+      DisplayLabel = 'Usuario'
+      DisplayWidth = 18
       FieldName = 'usuario'
       Origin = 'usuario'
       Required = True
       Size = 25
     end
     object query_usuariossenha: TStringField
+      DisplayLabel = 'Senha'
+      DisplayWidth = 18
       FieldName = 'senha'
       Origin = 'senha'
       Required = True
       Size = 25
     end
     object query_usuarioscargo: TStringField
+      DisplayLabel = 'Cargo'
+      DisplayWidth = 25
       FieldName = 'cargo'
       Origin = 'cargo'
       Required = True
@@ -207,11 +183,78 @@ object dm: Tdm
       FieldName = 'idFuncionario'
       Origin = 'idFuncionario'
       Required = True
+      Visible = False
     end
   end
   object ds_usuarios: TDataSource
     DataSet = query_usuarios
-    Left = 200
-    Top = 240
+    Left = 320
+    Top = 248
+  end
+  object tb_fornecedores: TFDTable
+    IndexFieldNames = 'id'
+    Connection = fd
+    UpdateOptions.UpdateTableName = 'pdv.fornecedores'
+    TableName = 'pdv.fornecedores'
+    Left = 424
+    Top = 104
+  end
+  object query_fornecedores: TFDQuery
+    Connection = fd
+    SQL.Strings = (
+      'SELECT * FROM fornecedores ORDER BY nome asc;')
+    Left = 424
+    Top = 184
+    object query_fornecedoresid: TFDAutoIncField
+      DisplayLabel = 'ID'
+      DisplayWidth = 7
+      FieldName = 'id'
+      Origin = 'id'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object query_fornecedoresnome: TStringField
+      DisplayLabel = 'Nome'
+      DisplayWidth = 20
+      FieldName = 'nome'
+      Origin = 'nome'
+      Required = True
+      Size = 30
+    end
+    object query_fornecedoressegmento: TStringField
+      DisplayLabel = 'Segmento'
+      DisplayWidth = 18
+      FieldName = 'segmento'
+      Origin = 'segmento'
+      Required = True
+      Size = 25
+    end
+    object query_fornecedoresendereco: TStringField
+      DisplayLabel = 'Endereco'
+      DisplayWidth = 20
+      FieldName = 'endereco'
+      Origin = 'endereco'
+      Required = True
+      Size = 35
+    end
+    object query_fornecedorestelefone: TStringField
+      DisplayLabel = 'Telefone'
+      DisplayWidth = 17
+      FieldName = 'telefone'
+      Origin = 'telefone'
+      Required = True
+      Size = 15
+    end
+    object query_fornecedoresdata: TDateField
+      DisplayLabel = 'Data de Cadastro'
+      DisplayWidth = 8
+      FieldName = 'data'
+      Origin = 'data'
+      Required = True
+    end
+  end
+  object ds_fornecedores: TDataSource
+    DataSet = query_fornecedores
+    Left = 424
+    Top = 248
   end
 end

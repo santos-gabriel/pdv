@@ -30,6 +30,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure txtBuscarChange(Sender: TObject);
     procedure btnEditarClick(Sender: TObject);
+    procedure DBGrid1CellClick(Column: TColumn);
+    procedure btnExcluirClick(Sender: TObject);
   private
     { Private declarations }
     procedure limparCampos;
@@ -71,52 +73,83 @@ begin
 end;
 
 procedure TFrmUsuarios.btnEditarClick(Sender: TObject);
-var
+  var
     usuario : String;
 begin
-  associarCampos;
   //VERICAR NOME VAZIO
   if Trim(txtNome.Text) = '' then
   begin
-    MessageDlg('Selecione o nome!', mtInformation, mbOKCancel, 0);
+    MessageDlg('Preencha o nome!', mtInformation, mbOKCancel, 0);
     listar;
     exit;
   end;
-
   //VERICAR USUARIO VAZIO
   if Trim(txtUsuario.Text) = '' then
   begin
-    MessageDlg('Osuário inválido!', mtInformation, mbOKCancel, 0);
+    MessageDlg('Preencha o usuário!', mtInformation, mbOKCancel, 0);
     txtUsuario.SetFocus;
     listar;
     exit;
   end;
-
   //VERICAR SENHA VAZIO
   if Trim(txtSenha.Text) = '' then
   begin
-    MessageDlg('Senha inválida!', mtInformation, mbOKCancel, 0);
+    MessageDlg('Preencha o senha!', mtInformation, mbOKCancel, 0);
     txtSenha.SetFocus;
     listar;
     exit;
   end;
 
+  if UsuarioAntigo <> txtUsuario.Text then
+  begin
+  //VERIFICAR (PELO NOME DE USUARIO) FUNCIONARIO JA CADASTRADO
+    dm.query_usuarios.Close;
+    dm.query_usuarios.SQL.Clear;
+    dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE usuario = ' + QuotedStr(Trim(txtUsuario.Text)));
+    dm.query_usuarios.Open;
 
-  //VERIFICAR USUARIO JA CADASTRADO
+    if not dm.query_usuarios.IsEmpty then
+    begin
+        usuario := dm.query_usuarios['usuario'];
+        MessageDlg('O usuário '+usuario+' já está cadastrado!', mtInformation, mbOKCancel, 0);
+        txtUsuario.Text := '';
+        txtUsuario.SetFocus;
+        listar;
+        exit;
+    end;
+
+  end;
+
+  //associarCampos;
   dm.query_usuarios.Close;
   dm.query_usuarios.SQL.Clear;
-  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE usuario = ' + QuotedStr(Trim(txtUsuario.Text)));
-  dm.query_usuarios.Open;
+  dm.query_usuarios.SQL.Add('UPDATE usuarios SET nome = :nome, usuario = :usuario, senha = :senha WHERE id = :id');
+  dm.query_usuarios.ParamByName('nome').Value := txtNome.Text;
+  dm.query_usuarios.ParamByName('usuario').Value := txtUsuario.Text;
+  dm.query_usuarios.ParamByName('senha').Value := txtSenha.Text;
+  dm.query_usuarios.ParamByName('id').Value := id;
+  dm.query_usuarios.ExecSQL;
 
-  if not dm.query_usuarios.IsEmpty then
+  listar;
+  MessageDlg('Editado com sucesso!', mtConfirmation, mbOKCancel, 0);
+  limparCampos;
+  desabilitarCampos;
+
+
+
+end;
+
+procedure TFrmUsuarios.btnExcluirClick(Sender: TObject);
+begin
+  if MessageDlg('Deseja excluir este registro?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-      usuario := dm.query_usuarios['usuario'];
-      MessageDlg('O usuário '+usuario+' já está cadastrado!', mtError, mbOKCancel, 0);
-      desabilitarCampos;
-      limparCampos;
-      listar;
-      exit;
+    dm.tb_usuarios.Delete;
   end;
+
+  limparCampos;
+  btnEditar.Enabled := false;
+  btnExcluir.Enabled := false;
+  listar
 end;
 
 procedure TFrmUsuarios.btnNovoClick(Sender: TObject);
@@ -128,73 +161,84 @@ begin
 end;
 
 procedure TFrmUsuarios.btnSalvarClick(Sender: TObject);
-  var
-    usuario : String;
-begin
-  associarCampos;
-  //VERICAR NOME VAZIO
-  if Trim(txtNome.Text) = '' then
+var
+  usuario : string;
   begin
-    MessageDlg('Selecione o nome!', mtInformation, mbOKCancel, 0);
-    listar;
-    exit;
-  end;
 
-  //VERICAR USUARIO VAZIO
-  if Trim(txtUsuario.Text) = '' then
-  begin
-    MessageDlg('Osuário inválido!', mtInformation, mbOKCancel, 0);
-    txtUsuario.SetFocus;
-    listar;
-    exit;
-  end;
+      if Trim(txtNome.Text) = '' then
+       begin
+           MessageDlg('Preencha o Nome!', mtInformation, mbOKCancel, 0);
+          txtNome.SetFocus;
+           exit;
+       end;
 
-  //VERICAR SENHA VAZIO
-  if Trim(txtSenha.Text) = '' then
-  begin
-    MessageDlg('Senha inválida!', mtInformation, mbOKCancel, 0);
-    txtSenha.SetFocus;
-    listar;
-    exit;
-  end;
+        if Trim(txtUsuario.Text) = '' then
+       begin
+           MessageDlg('Preencha o Usuario!', mtInformation, mbOKCancel, 0);
+           txtUsuario.SetFocus;
+           exit;
+       end;
 
 
-  //VERIFICAR USUARIO JA CADASTRADO
-  dm.query_usuarios.Close;
-  dm.query_usuarios.SQL.Clear;
-  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE usuario = ' + QuotedStr(Trim(txtUsuario.Text)));
-  dm.query_usuarios.Open;
+        if Trim(txtSenha.Text) = '' then
+       begin
+           MessageDlg('Preencha a Senha!', mtInformation, mbOKCancel, 0);
+           txtSenha.SetFocus;
+           exit;
+       end;
 
-  if not dm.query_usuarios.IsEmpty then
-  begin
-      usuario := dm.query_usuarios['usuario'];
-      MessageDlg('O usuário '+usuario+' já está cadastrado!', mtError, mbOKCancel, 0);
-      desabilitarCampos;
-      limparCampos;
-      listar;
-      exit;
-  end;
+
+           //VERIFICAR SE O usuário JÁ ESTÁ CADASTRADO
+           dm.query_usuarios.Close;
+           dm.query_usuarios.SQL.Clear;
+           dm.query_usuarios.SQL.Add('SELECT * from usuarios where usuario = ' + QuotedStr(Trim(txtUsuario.Text)));
+           dm.query_usuarios.Open;
+
+           if not dm.query_usuarios.isEmpty then
+           begin
+             usuario :=  dm.query_usuarios['usuario'];
+             MessageDlg('O Usuário ' + usuario + ' já está cadastrado!', mtInformation, mbOKCancel, 0);
+             txtUsuario.Text := '';
+             txtUsuario.SetFocus;
+             exit;
+           end;
+
 
 
   associarCampos;
   dm.tb_usuarios.Post;
-  MessageDlg('Salvo com sucesso!', mtConfirmation, mbOKCancel, 0);
-  desabilitarCampos;
+  MessageDlg('Salvo com Sucesso', mtInformation, mbOKCancel, 0);
   limparCampos;
+  desabilitarCampos;
   btnSalvar.Enabled := false;
-
   listar;
-
-
 end;
 
 procedure TFrmUsuarios.buscarCampos;
 begin
   dm.query_usuarios.Close;
   dm.query_usuarios.SQL.Clear;
-  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE nome LIKE :nome ORDER BY nome asc');
+  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE cargo <> :cargo and nome LIKE :nome ORDER BY nome asc');
   dm.query_usuarios.ParamByName('nome').Value := txtBuscar.Text + '%';
+  dm.query_usuarios.ParamByName('cargo').Value := 'admin';
   dm.query_usuarios.Open;
+end;
+
+procedure TFrmUsuarios.DBGrid1CellClick(Column: TColumn);
+begin
+  btnEditar.Enabled := true;
+  btnExcluir.Enabled := true;
+  txtUsuario.Enabled := true;
+  txtSenha.Enabled := true;
+
+  dm.tb_usuarios.Edit;
+
+  txtNome.Text := dm.query_usuarios.FieldByName('nome').Value;
+  txtUsuario.Text := dm.query_usuarios.FieldByName('usuario').Value;
+  txtSenha.Text := dm.query_usuarios.FieldByName('senha').Value;
+  id := dm.query_usuarios.FieldByName('id').Value;
+  usuarioAntigo := dm.query_usuarios.FieldByName('usuario').Value;
+
 end;
 
 procedure TFrmUsuarios.desabilitarCampos;
@@ -220,6 +264,7 @@ begin
   listar;
 end;
 
+
 procedure TFrmUsuarios.habilitarCampos;
 begin
   txtUsuario.Enabled := true;
@@ -239,7 +284,8 @@ begin
   //LISTAGEM DA TABELA
   dm.query_usuarios.Close;
   dm.query_usuarios.SQL.Clear;
-  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios ORDER BY nome asc');
+  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE cargo <> :cargo ORDER BY nome asc');
+  dm.query_usuarios.ParamByName('cargo').Value := 'admin';
   dm.query_usuarios.Open;
 
 end;

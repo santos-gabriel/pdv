@@ -10,9 +10,11 @@ object FrmLogin: TFrmLogin
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   WindowState = wsMaximized
   OnCanResize = FormCanResize
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
@@ -6581,6 +6583,8 @@ object FrmLogin: TFrmLogin
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        ParentShowHint = False
+        ShowHint = False
         TabOrder = 0
       end
       object txtSenha: TEdit

@@ -5,7 +5,9 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.jpeg, Vcl.ExtCtrls,
-  Vcl.Imaging.pngimage, Vcl.StdCtrls, Vcl.Buttons;
+  Vcl.Imaging.pngimage, Vcl.StdCtrls, Vcl.Buttons, Datasnap.Provider, Data.DB,
+  Datasnap.DBClient, Data.DBXMySQL, Data.FMTBcd, Data.SqlExpr, Vcl.Grids,
+  Vcl.DBGrids, UdmModelo, Conexao;
 
 type
   TFrmLogin = class(TForm)
@@ -19,6 +21,7 @@ type
     procedure FormCanResize(Sender: TObject; var NewWidth, NewHeight: Integer;
       var Resize: Boolean);
     procedure btnLoginClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
     procedure CentralizarPainel;
@@ -53,7 +56,8 @@ begin
       exit;
     end;
 
-    Login;
+    login;
+
 end;
 
 procedure TFrmLogin.CentralizarPainel;
@@ -68,11 +72,43 @@ begin
     CentralizarPainel;
 end;
 
+procedure TFrmLogin.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if key = 13 then
+  Login;
+end;
+
 procedure TFrmLogin.Login;
 begin
   //AQUI VAI TODO O CODIGO PARA VALIDAÇÃO DE LOGIN
-  frmMenuPrincipal := TfrmMenuPrincipal.Create(FrmLogin);
-  frmMenuPrincipal.ShowModal;
+  dm.query_usuarios.Close;
+  dm.query_usuarios.SQL.Clear;
+  dm.query_usuarios.SQL.Add('SELECT * FROM usuarios WHERE usuario = :usuario and senha = :senha');
+  dm.query_usuarios.ParamByName('usuario').Value := txtLogin.Text;
+  dm.query_usuarios.ParamByName('senha').Value := txtSenha.Text;
+  dm.query_usuarios.Open;
+
+  if not dm.query_usuarios.IsEmpty then
+  begin
+
+    nomeUsuario := dm.query_usuarios['usuario'];
+    cargoUsuario := dm.query_usuarios['cargo'];
+    txtSenha.Text := '';
+    FrmLogin.Visible := false;
+    frmMenuPrincipal := TfrmMenuPrincipal.Create(FrmLogin);
+    frmMenuPrincipal.ShowModal;
+    FrmLogin.Close;
+
+  end
+  else
+  begin
+    MessageDlg('Campos inválidos', mtError, mbOKCancel, 0);
+    txtLogin.Text := '';
+    txtSenha.Text := '';
+    txtLogin.SetFocus;
+  end;
+
 end;
 
 end.

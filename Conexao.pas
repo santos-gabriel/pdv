@@ -30,12 +30,6 @@ type
     query_funccargo: TStringField;
     query_funcdata: TDateField;
     tb_usuarios: TFDTable;
-    tb_usuariosid: TFDAutoIncField;
-    tb_usuariosnome: TStringField;
-    tb_usuariosusuario: TStringField;
-    tb_usuariossenha: TStringField;
-    tb_usuarioscargo: TStringField;
-    tb_usuariosidFuncionario: TIntegerField;
     query_usuarios: TFDQuery;
     query_usuariosid: TFDAutoIncField;
     query_usuariosnome: TStringField;
@@ -44,6 +38,15 @@ type
     query_usuarioscargo: TStringField;
     query_usuariosidFuncionario: TIntegerField;
     ds_usuarios: TDataSource;
+    tb_fornecedores: TFDTable;
+    query_fornecedores: TFDQuery;
+    ds_fornecedores: TDataSource;
+    query_fornecedoresid: TFDAutoIncField;
+    query_fornecedoresnome: TStringField;
+    query_fornecedoressegmento: TStringField;
+    query_fornecedoresendereco: TStringField;
+    query_fornecedorestelefone: TStringField;
+    query_fornecedoresdata: TDateField;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -60,6 +63,9 @@ var
   cargoFuncionario : String;
 
   chamada : String;
+
+  nomeUsuario : String;
+  cargoUsuario : String;
 
 implementation
 
